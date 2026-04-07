@@ -21,11 +21,11 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         if (repository.count() == 0) {
             repository.saveAll(List.of(
-                new Etudiant(null, "AB123456", "Ahmed Benali",         LocalDate.of(2001, 3,  15)),
-                new Etudiant(null, "CD789012", "Fatima Zahra Alami",   LocalDate.of(2002, 7,  22)),
-                new Etudiant(null, "EF345678", "Mohamed Chakir",       LocalDate.of(2000, 11,  8)),
-                new Etudiant(null, "GH901234", "Sara Mansouri",        LocalDate.of(2003, 1,  30)),
-                new Etudiant(null, "IJ567890", "Youssef Kadiri",       LocalDate.of(2001, 9,  14))
+                new Etudiant("AB123456", "Ahmed Benali",       LocalDate.of(2001, 3, 15)),
+                new Etudiant("CD789012", "Fatima Zahra Alami", LocalDate.of(2002, 7, 22)),
+                new Etudiant("EF345678", "Mohamed Chakir",     LocalDate.of(2000, 11, 8)),
+                new Etudiant("GH901234", "Sara Mansouri",      LocalDate.of(2003, 1, 30)),
+                new Etudiant("IJ567890", "Youssef Kadiri",     LocalDate.of(2001, 9, 14))
             ));
             System.out.println("✅ Données initiales chargées avec succès !");
         }
