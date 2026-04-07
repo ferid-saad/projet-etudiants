@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Étudiants</title>
+</head>
+<body>
+    <h1>Liste des Étudiants</h1>
+    <table border="1" id="etudiantsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>CIN</th>
+                <th>Nom</th>
+                <th>Date de Naissance</th>
+                <th>Âge</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les étudiants seront insérés ici -->
+        </tbody>
+    </table>
+
+    <script>
+        fetch('/api/etudiants')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#etudiantsTable tbody');
+                data.forEach(e => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${e.id}</td>
+                        <td>${e.cin}</td>
+                        <td>${e.nom}</td>
+                        <td>${e.dateNaissance}</td>
+                        <td>${e.age}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => console.error('Erreur fetch:', err));
+    </script>
+</body>
+</html>
