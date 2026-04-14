@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: etudiants_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: 071013
     ports:
       - "5432:5432"
     volumes:
@@ -32,7 +32,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/etudiants_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_PASSWORD: 071013
     depends_on:
       db:
         condition: service_healthy
