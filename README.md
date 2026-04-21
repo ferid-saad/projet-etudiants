@@ -35,6 +35,9 @@ projet-etudiants/
 │   │   ├── services/api_service.dart
 │   │   └── screens/etudiant_list_screen.dart
 │   └── pubspec.yaml
+├── K8s/                      ← Déploiements Kubernetes
+│   ├── etudiant-deployment.yaml
+│   └── postgres-deployment.yaml
 ├── docker-compose.yml        ← Lance l'API + PostgreSQL
 └── README.md
 ```
@@ -128,6 +131,54 @@ docker compose down -v
 
 ---
 
+## Partie 4 — Déploiement Kubernetes
+
+### Prérequis
+
+- Kubernetes cluster (Minikube, Kind, ou cluster cloud)
+- kubectl installé et configuré
+
+### Déployer sur Kubernetes
+
+Depuis le dossier `K8s/` :
+
+1. Appliquer les déploiements :
+   ```bash
+   kubectl apply -f postgres-deployment.yaml
+   kubectl apply -f etudiant-deployment.yaml
+   ```
+
+2. Vérifier les pods :
+   ```bash
+   kubectl get pods
+   ```
+
+3. Vérifier les services :
+   ```bash
+   kubectl get services
+   ```
+
+L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
+
+### Architecture Kubernetes
+
+```
+┌─────────────────────────────────┐
+│  etudiant-deployment            │
+│  (Spring Boot API)              │
+│  Service: etudiant-service      │
+│  NodePort: 30080                │
+└────────────────┬────────────────┘
+                 │ jdbc:postgresql://postgres-service:5432
+┌────────────────▼────────────────┐
+│  postgres-deployment            │
+│  (PostgreSQL 16)                │
+│  Service: postgres-service      │
+└─────────────────────────────────┘
+```
+
+---
+
 ## Partie 3 — Application mobile Flutter
 
 ### Prérequis
@@ -200,3 +251,51 @@ Puis copiez/remplacez :
 | Base de données | PostgreSQL 16 |
 | Conteneurs | Docker · Docker Compose |
 | Application mobile | Flutter 3.x · package `http` |
+
+---
+
+## Partie 4 — Déploiement Kubernetes
+
+### Prérequis
+
+- Kubernetes cluster (Minikube, Kind, ou cluster cloud)
+- kubectl installé et configuré
+
+### Déployer sur Kubernetes
+
+Depuis le dossier `K8s/` :
+
+1. Appliquer les déploiements :
+   ```bash
+   kubectl apply -f postgres-deployment.yaml
+   kubectl apply -f etudiant-deployment.yaml
+   ```
+
+2. Vérifier les pods :
+   ```bash
+   kubectl get pods
+   ```
+
+3. Vérifier les services :
+   ```bash
+   kubectl get services
+   ```
+
+L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
+
+### Architecture Kubernetes
+
+```
+┌─────────────────────────────────┐
+│  etudiant-deployment            │
+│  (Spring Boot API)              │
+│  Service: etudiant-service      │
+│  NodePort: 30080                │
+└────────────────┬────────────────┘
+                 │ jdbc:postgresql://postgres-service:5432
+┌────────────────▼────────────────┐
+│  postgres-deployment            │
+│  (PostgreSQL 16)                │
+│  Service: postgres-service      │
+└─────────────────────────────────┘
+```
