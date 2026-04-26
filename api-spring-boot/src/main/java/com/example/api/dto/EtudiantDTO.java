@@ -1,13 +1,17 @@
 package com.example.api.dto;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 
 public class EtudiantDTO {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private Long id;
     private String cin;
     private String nom;
-    private LocalDate dateNaissance;
+    private String dateNaissance;  // String au lieu de LocalDate
     private String email;
     private int anneePremiereInscription;
     private Long departementId;
@@ -22,12 +26,14 @@ public class EtudiantDTO {
         this.id = id;
         this.cin = cin;
         this.nom = nom;
-        this.dateNaissance = dateNaissance;
+        this.dateNaissance = dateNaissance != null ? dateNaissance.format(FORMATTER) : null;
         this.email = email;
         this.anneePremiereInscription = anneePremiereInscription;
         this.departementId = departementId;
         this.departementNom = departementNom;
-        this.age = age;
+        // Recalcul de l'âge si non fourni
+        this.age = (age != null) ? age :
+                (dateNaissance != null ? Period.between(dateNaissance, LocalDate.now()).getYears() : null);
     }
 
     public Long getId() { return id; }
@@ -39,8 +45,10 @@ public class EtudiantDTO {
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
 
-    public LocalDate getDateNaissance() { return dateNaissance; }
-    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
+    public String getDateNaissance() { return dateNaissance; }
+    public void setDateNaissance(LocalDate dateNaissance) {
+        this.dateNaissance = dateNaissance != null ? dateNaissance.format(FORMATTER) : null;
+    }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
