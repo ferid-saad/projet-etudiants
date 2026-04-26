@@ -7,7 +7,7 @@ Mini-projet complet composé d'une API REST, d'une base de données conteneuris�
 
 ---
 
-# Lien GitHub
+# Lien dockerhub
 
 https://hub.docker.com/r/feridsaad/projet-etudiants-api
 
