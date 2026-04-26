@@ -93,7 +93,7 @@ Prérequis : Java 21+, Maven 3.9+, PostgreSQL 16 en cours d'exécution sur le po
 
 3. Tester dans le navigateur ou avec curl :
    ```
-   http://localhost:8080/api/etudiants
+   http://localhost:8081/api/etudiants
    ```
 
 ---
