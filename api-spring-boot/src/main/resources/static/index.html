@@ -300,11 +300,12 @@
           <th>Date de naissance</th>
           <th>Âge</th>
           <th>Inscription</th>
+          <th>Département</th>
         </tr>
       </thead>
       <tbody id="tbody">
         <tr class="state-row">
-          <td colspan="6"><span class="spinner"></span> Chargement…</td>
+          <td colspan="7"><span class="spinner"></span> Chargement…</td>
         </tr>
       </tbody>
     </table>
@@ -364,6 +365,7 @@
         <td class="date-text">${formatDate(e.dateNaissance)}</td>
         <td><span class="age-pill">${e.age ?? calcAge(e.dateNaissance)} ans</span></td>
         <td class="date-text">${e.anneePremiereInscription ?? '—'}</td>
+        <td class="date-text">${e.departementNom ?? '—'}</td>
       </tr>`).join('');
   }
 
@@ -388,13 +390,13 @@
   function setLoading(on) {
     if (on) {
       document.getElementById('tbody').innerHTML =
-        `<tr class="state-row"><td colspan="6"><span class="spinner"></span> Chargement…</td></tr>`;
+        `<tr class="state-row"><td colspan="7"><span class="spinner"></span> Chargement…</td></tr>`;
     }
   }
 
   function showError(msg) {
     document.getElementById('tbody').innerHTML =
-      `<tr class="state-row"><td colspan="6" class="error-msg">⚠ Erreur : ${msg}<br>
+      `<tr class="state-row"><td colspan="7" class="error-msg">⚠ Erreur : ${msg}<br>
        <small>Vérifiez que le serveur Spring Boot tourne sur le port 8080.</small></td></tr>`;
   }
 

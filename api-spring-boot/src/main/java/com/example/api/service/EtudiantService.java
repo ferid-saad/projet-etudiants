@@ -9,7 +9,8 @@ import com.example.api.repository.DepartementRepository;
 import com.example.api.repository.EtudiantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 
 @Service
@@ -38,6 +39,7 @@ public class EtudiantService {
 
     // Q9 - Filtre par annee
     @Transactional(readOnly = true)
+    @Cacheable(value = "etudiants")
     public List<EtudiantDTO> findByAnnee(int annee) {
         return etudiantRepository.findByAnneePremiereInscription(annee)
                 .stream()
@@ -51,7 +53,7 @@ public class EtudiantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Etudiant", id));
         return mapper.toDTO(e);
     }
-
+    @CacheEvict(value = "etudiants", allEntries = true)
     public EtudiantDTO save(EtudiantDTO dto) {
         Departement dep = resolveDepartement(dto.getDepartementId());
         Etudiant e = mapper.toEntity(dto, dep);
