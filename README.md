@@ -314,3 +314,12 @@ L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
 │  Service: postgres-service      │
 └─────────────────────────────────┘
 ```
+
+## Board Jira
+
+![Board Jira](./docs/jira-board.png)
+
+## Board Jira-backlog
+
+![Board Jira](./docs/jira-board-backlog.png)
+
