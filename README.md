@@ -6,33 +6,55 @@
 Mini-projet complet composé d'une API REST, d'une base de données conteneurisée et d'une application mobile.
 
 ---
-# Lien GitHub
+
+# Lien dockerhub
+
 https://hub.docker.com/r/feridsaad/projet-etudiants-api
+
 ---
+
 ## Structure du projet
 
 ```
+## 📂 Structure du projet
+
 projet-etudiants/
-├── api-spring-boot/          ← API Spring Boot 4
+├── api-spring-boot/        <- API Spring Boot (backend)
 │   ├── src/
 │   │   ├── main/java/com/example/api/
-│   │   │   ├── EtudiantsApiApplication.java
-│   │   │   ├── DataInitializer.java
-│   │   │   ├── entity/Etudiant.java
-│   │   │   ├── repository/EtudiantRepository.java
-│   │   │   └── controller/EtudiantController.java
-│   │   └── main/resources/application.properties
-│   ├── Dockerfile
-│   └── pom.xml
-├── mobile-app/               ← Application Flutter
+│   │   │   ├── EtudiantsApiApplication.java   <- Point d’entrée Spring Boot
+│   │   │   ├── DataInitializer.java           <- Initialisation des données
+│   │   │   ├── entity/                        <- Entités JPA (Etudiant, Departement)
+│   │   │   ├── repository/                    <- Interfaces JpaRepository
+│   │   │   ├── service/                       <- Logique métier
+│   │   │   ├── controller/                    <- Endpoints REST
+│   │   │   ├── dto/                           <- Objets de transfert (DTO)
+│   │   │   ├── mapper/                        <- Conversion Entity ↔ DTO
+│   │   │   ├── exception/                     <- Gestion des erreurs
+│   │   │   ├── config/                        <- Configurations (Jackson, OpenAPI)
+│   │   ├── main/resources/
+│   │   │   ├── application.properties         <- Configuration Spring Boot
+│   │   │   ├── static/index.html              <- Page statique
+│   │   ├── test/java/com/example/api/
+│   │   │   ├── EtudiantsApiApplicationTests.java <- Tests unitaires
+│   │   │   ├── EtudiantSteps.java             <- Steps Cucumber (BDD)
+│   │   ├── test/resources/features/           <- Scénarios Gherkin
+│   ├── Dockerfile                             <- Image Docker du backend
+│   ├── pom.xml                                <- Dépendances Maven
+│   ├── target/                                <- Fichiers compilés
+│
+├── mobile-app/             <- Application Flutter (frontend mobile)
 │   ├── lib/
-│   │   ├── main.dart
-│   │   ├── models/etudiant.dart
-│   │   ├── services/api_service.dart
-│   │   └── screens/etudiant_list_screen.dart
-│   └── pubspec.yaml
-├── docker-compose.yml        ← Lance l'API + PostgreSQL
-└── README.md
+│   │   ├── main.dart                          <- Point d’entrée Flutter
+│   │   ├── models/etudiant.dart               <- Modèle étudiant
+│   │   ├── services/api_service.dart          <- Appels API vers backend
+│   │   ├── screens/etudiant_list_screen.dart  <- Écran liste des étudiants
+│   ├── pubspec.yaml                           <- Dépendances Flutter
+│
+├── docker-compose.yml      <- Orchestration API + PostgreSQL
+├── K8s/                    <- Déploiement Kubernetes (API + PostgreSQL)
+├── README.md               <- Documentation du projet
+
 ```
 
 ---
@@ -124,6 +146,54 @@ docker compose down -v
 
 ---
 
+## Partie 4 — Déploiement Kubernetes
+
+### Prérequis
+
+- Kubernetes cluster (Minikube, Kind, ou cluster cloud)
+- kubectl installé et configuré
+
+### Déployer sur Kubernetes
+
+Depuis le dossier `K8s/` :
+
+1. Appliquer les déploiements :
+   ```bash
+   kubectl apply -f postgres-deployment.yaml
+   kubectl apply -f etudiant-deployment.yaml
+   ```
+
+2. Vérifier les pods :
+   ```bash
+   kubectl get pods
+   ```
+
+3. Vérifier les services :
+   ```bash
+   kubectl get services
+   ```
+
+L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
+
+### Architecture Kubernetes
+
+```
+┌─────────────────────────────────┐
+│  etudiant-deployment            │
+│  (Spring Boot API)              │
+│  Service: etudiant-service      │
+│  NodePort: 30080                │
+└────────────────┬────────────────┘
+                 │ jdbc:postgresql://postgres-service:5432
+┌────────────────▼────────────────┐
+│  postgres-deployment            │
+│  (PostgreSQL 16)                │
+│  Service: postgres-service      │
+└─────────────────────────────────┘
+```
+
+---
+
 ## Partie 3 — Application mobile Flutter
 
 ### Prérequis
@@ -196,3 +266,66 @@ Puis copiez/remplacez :
 | Base de données | PostgreSQL 16 |
 | Conteneurs | Docker · Docker Compose |
 | Application mobile | Flutter 3.x · package `http` |
+
+---
+
+## Partie 4 — Déploiement Kubernetes
+
+### Prérequis
+
+- Kubernetes cluster (Minikube, Kind, ou cluster cloud)
+- kubectl installé et configuré
+
+### Déployer sur Kubernetes
+
+Depuis le dossier `K8s/` :
+
+1. Appliquer les déploiements :
+   ```bash
+   kubectl apply -f postgres-deployment.yaml
+   kubectl apply -f etudiant-deployment.yaml
+   ```
+
+2. Vérifier les pods :
+   ```bash
+   kubectl get pods
+   ```
+
+3. Vérifier les services :
+   ```bash
+   kubectl get services
+   ```
+
+L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
+
+### Architecture Kubernetes
+
+```
+┌─────────────────────────────────┐
+│  etudiant-deployment            │
+│  (Spring Boot API)              │
+│  Service: etudiant-service      │
+│  NodePort: 30080                │
+└────────────────┬────────────────┘
+                 │ jdbc:postgresql://postgres-service:5432
+┌────────────────▼────────────────┐
+│  postgres-deployment            │
+│  (PostgreSQL 16)                │
+│  Service: postgres-service      │
+└─────────────────────────────────┘
+```
+
+## Board Jira
+
+![Board Jira](./docs/jira-board.png)
+
+## Board Jira-backlog
+
+![Board Jira](./docs/jira-board-backlog.png)
+
+## grading_db
+
+![Board Jira](./docs/grading_db.png)
+
+
+
