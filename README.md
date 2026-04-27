@@ -13,69 +13,80 @@ https://hub.docker.com/r/feridsaad/projet-etudiants-api
 
 ---
 
-## Structure du projet
-
-```
 ## 📂 Structure du projet
 
-projet-etudiants/
-├── api-spring-boot/        <- API Spring Boot (backend)
-│   ├── src/
-│   │   ├── main/java/com/example/api/
-│   │   │   ├── EtudiantsApiApplication.java   <- Point d’entrée Spring Boot
-│   │   │   ├── DataInitializer.java           <- Initialisation des données
-│   │   │   ├── entity/                        <- Entités JPA (Etudiant, Departement)
-│   │   │   ├── repository/                    <- Interfaces JpaRepository
-│   │   │   ├── service/                       <- Logique métier
-│   │   │   ├── controller/                    <- Endpoints REST
-│   │   │   ├── dto/                           <- Objets de transfert (DTO)
-│   │   │   ├── mapper/                        <- Conversion Entity ↔ DTO
-│   │   │   ├── exception/                     <- Gestion des erreurs
-│   │   │   ├── config/                        <- Configurations (Jackson, OpenAPI)
-│   │   ├── main/resources/
-│   │   │   ├── application.properties         <- Configuration Spring Boot
-│   │   │   ├── static/index.html              <- Page statique
-│   │   ├── test/java/com/example/api/
-│   │   │   ├── EtudiantsApiApplicationTests.java <- Tests unitaires
-│   │   │   ├── EtudiantSteps.java             <- Steps Cucumber (BDD)
-│   │   ├── test/resources/features/           <- Scénarios Gherkin
-│   ├── Dockerfile                             <- Image Docker du backend
-│   ├── pom.xml                                <- Dépendances Maven
-│   ├── target/                                <- Fichiers compilés
-│
-├── mobile-app/             <- Application Flutter (frontend mobile)
-│   ├── lib/
-│   │   ├── main.dart                          <- Point d’entrée Flutter
-│   │   ├── models/etudiant.dart               <- Modèle étudiant
-│   │   ├── services/api_service.dart          <- Appels API vers backend
-│   │   ├── screens/etudiant_list_screen.dart  <- Écran liste des étudiants
-│   ├── pubspec.yaml                           <- Dépendances Flutter
-│
-├── docker-compose.yml      <- Orchestration API + PostgreSQL
-├── K8s/                    <- Déploiement Kubernetes (API + PostgreSQL)
-├── README.md               <- Documentation du projet
-
 ```
 
----
 
-## Partie 1 — API REST Spring Boot 4
+projet-etudiants/
+├── .gitignore                <- Fichiers/dossiers ignorés par Git
+├── architecture.txt          <- Documentation sur l’architecture du projet
+├── docker-compose.yml        <- Orchestration des services (API, DB, etc.)
+├── README.md                 <- Documentation principale du projet
+│
+├── .github/                  <- Configurations GitHub (issues, hooks)
+│   ├── ISSUE_TEMPLATE/        <- Modèles pour bug reports et feature requests
+│   └── java-upgrade/hooks/    <- Scripts PowerShell/Bash pour automatisation
+│
+├── .idea/                    <- Configurations IntelliJ IDEA
+├── .vscode/                  <- Configurations VS Code
+│
+├── api-spring-boot/          <- API backend Spring Boot
+│   ├── Dockerfile             <- Image Docker pour l’API
+│   ├── pom.xml                <- Dépendances Maven
+│   ├── src/
+│   │   ├── main/java/com/example/api/
+│   │   │   ├── EtudiantsApiApplication.java   <- Classe principale Spring Boot
+│   │   │   ├── config/                        <- Configurations (Jackson, Redis, OpenAPI)
+│   │   │   ├── controller/                    <- Contrôleurs REST (Etudiant, Département)
+│   │   │   ├── dto/                           <- Objets de transfert (DTO)
+│   │   │   ├── entity/                        <- Entités JPA (Etudiant, Département)
+│   │   │   ├── exception/                     <- Gestion des exceptions
+│   │   │   ├── mapper/                        <- MapStruct (conversion Entity <-> DTO)
+│   │   │   ├── repository/                    <- Interfaces JPA Repository
+│   │   │   └── service/                       <- Services métier
+│   │   ├── main/resources/                    <- Configurations (application.properties)
+│   │   ├── test/java/com/example/api/         <- Tests unitaires et BDD (Cucumber)
+│   │   └── test/resources/features/           <- Scénarios Gherkin (.feature)
+│   └── target/                                <- Fichiers compilés par Maven
+│
+├── docs/                     <- Documentation visuelle (schémas, Jira board)
+│   ├── grading_db.png
+│   ├── jira-board.png
+│   └── jira-board-backlog.png
+│
+├── grading-service/          <- Service de gestion des notes
+│   ├── pom.xml                <- Dépendances Maven
+│   ├── src/main/java/com/example/grading/
+│   │   ├── GradingServiceApplication.java     <- Classe principale
+│   │   ├── controller/                        <- Contrôleur REST (NoteController)
+│   │   ├── dto/                               <- DTO pour les notes
+│   │   ├── entity/                            <- Entité Note
+│   │   ├── exception/                         <- Exceptions personnalisées
+│   │   ├── mapper/                            <- MapStruct (NoteMapper)
+│   │   ├── repository/                        <- JPA Repository
+│   │   └── service/                           <- Service métier
+│   └── test/java/com/example/grading/         <- Tests unitaires
+│
+├── K8s/                      <- Manifests Kubernetes
+│   ├── etudiant-deployment.yaml <- Déploiement API étudiants
+│   └── postgres-deployment.yaml <- Déploiement base PostgreSQL
+│
+├── mobile-app/               <- Application Flutter (front-end mobile)
+│   ├── pubspec.yaml           <- Dépendances Flutter
+│   ├── lib/                   <- Code source Dart
+│   │   ├── main.dart          <- Point d’entrée Flutter
+│   │   ├── models/            <- Modèles (Etudiant)
+│   │   ├── services/          <- Services API (api_service.dart)
+│   │   └── screens/           <- Interfaces (liste des étudiants)
+│   ├── android/               <- Projet Android natif
+│   ├── ios/                   <- Projet iOS natif
+│   ├── web/                   <- Version web (index.html, manifest.json)
+│   ├── linux/                 <- Version Linux
+│   ├── macos/                 <- Version macOS
+│   └── windows/               <- Version Windows
 
-### Endpoint
-
-| Méthode | URL | Description |
-|---------|-----|-------------|
-| GET | `/api/etudiants` | Retourne la liste de tous les étudiants (JSON) |
-
-### Entité Etudiant
-
-| Champ | Type | Description |
-|-------|------|-------------|
-| `id` | Long | Identifiant auto-généré |
-| `cin` | String | Carte d'identité nationale |
-| `nom` | String | Nom complet |
-| `dateNaissance` | LocalDate | Date de naissance (ISO-8601) |
-
+````
 ### Lancer l'API localement (sans Docker)
 
 Prérequis : Java 21+, Maven 3.9+, PostgreSQL 16 en cours d'exécution sur le port 5432.
