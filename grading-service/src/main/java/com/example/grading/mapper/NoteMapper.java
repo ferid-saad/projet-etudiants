@@ -5,7 +5,7 @@ import com.example.grading.entity.Note;
 import org.springframework.stereotype.Component;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+
 @Component
 public class NoteMapper {
 

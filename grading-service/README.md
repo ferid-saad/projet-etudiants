@@ -323,9 +323,3 @@ L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
 
 ![Board Jira](./docs/jira-board-backlog.png)
 
-## grading_db
-
-![Board Jira](./docs/grading_db.png)
-
-
-
