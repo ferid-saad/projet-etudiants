@@ -1,0 +1,70 @@
+<<<<<<< HEAD
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+=======
+# ── Java / Maven ───────────────────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ── Flutter / Dart ─────────────────────────────────────────────────────────
+mobile-app/build/
+mobile-app/.dart_tool/
+mobile-app/.flutter-plugins
+mobile-app/.flutter-plugins-dependencies
+mobile-app/.pub-cache/
+mobile-app/.pub/
+mobile-app/android/.gradle/
+mobile-app/android/local.properties
+mobile-app/android/captures/
+mobile-app/ios/Pods/
+mobile-app/ios/.symlinks/
+mobile-app/*.iml
+
+# ── IDEs ───────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.suo
+*.user
+.classpath
+.project
+.settings/
+
+# ── OS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+>>>>>>> origin/version-3
