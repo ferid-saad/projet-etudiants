@@ -1,17 +1,19 @@
 package com.example.api.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
-public class EtudiantDTO {
+public class EtudiantDTO implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private Long id;
     private String cin;
     private String nom;
-    private String dateNaissance;  // String au lieu de LocalDate
+    private String dateNaissance;
     private String email;
     private int anneePremiereInscription;
     private Long departementId;
@@ -31,7 +33,6 @@ public class EtudiantDTO {
         this.anneePremiereInscription = anneePremiereInscription;
         this.departementId = departementId;
         this.departementNom = departementNom;
-        // Recalcul de l'âge si non fourni
         this.age = (age != null) ? age :
                 (dateNaissance != null ? Period.between(dateNaissance, LocalDate.now()).getYears() : null);
     }
