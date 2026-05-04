@@ -46,8 +46,8 @@ public class EtudiantDTO {
     public void setNom(String nom) { this.nom = nom; }
 
     public String getDateNaissance() { return dateNaissance; }
-    public void setDateNaissance(LocalDate dateNaissance) {
-        this.dateNaissance = dateNaissance != null ? dateNaissance.format(FORMATTER) : null;
+    public void setDateNaissance(String dateNaissance) {
+        this.dateNaissance = dateNaissance;
     }
 
     public String getEmail() { return email; }

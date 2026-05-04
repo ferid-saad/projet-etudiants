@@ -1,5 +1,8 @@
 package com.example.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
@@ -18,6 +21,8 @@ public class Etudiant {
     @Column(nullable = false)
     private String nom;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
     private LocalDate dateNaissance;
 
