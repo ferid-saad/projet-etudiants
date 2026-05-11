@@ -51,6 +51,8 @@ services:
     environment:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+    networks:
+     - etudiants-network
 
   redis:
     image: redis:7.2

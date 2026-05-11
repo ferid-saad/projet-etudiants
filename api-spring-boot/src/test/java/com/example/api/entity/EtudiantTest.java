@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EtudiantTest {
+class  EtudiantTest {
 
     @Test
     void shouldCalculateAgeWhenBirthdayAlreadyPassedThisYear() {

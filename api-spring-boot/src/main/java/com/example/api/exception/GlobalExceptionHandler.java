@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 
@@ -11,13 +12,13 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     // 404 - Ressource introuvable
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResource(NoResourceFoundException ex) {
         ErrorResponse error = new ErrorResponse(
-            HttpStatus.NOT_FOUND.value(),
-            ex.getMessage(),
-            LocalDateTime.now(),
-            null
+                HttpStatus.NOT_FOUND.value(),
+                "Ressource introuvable : " + ex.getMessage(),
+                LocalDateTime.now(),
+                null
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
