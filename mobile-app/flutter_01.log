@@ -1,0 +1,98 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run -d chrome
+
+## exception
+
+PathAccessException: PathAccessException: Cannot open file, path = 'C:\Users\fersd\projet-etudiants\mobile-app\.dart_tool\hooks_runner\objective_c\337ce265dc\stdout.txt' (OS Error: Le processus ne peut pas accéder au fichier car ce fichier est utilisé par un autre processus, errno = 32)
+
+```
+#0      _checkForErrorResponse (dart:io/common.dart:58:9)
+#1      _File.open.<anonymous closure> (dart:io/file_impl.dart:438:7)
+#2      _rootRunUnary (dart:async/zone_root.dart:48:47)
+#3      _CustomZone.runUnary (dart:async/zone.dart:733:19)
+<asynchronous suspension>
+#4      _File.writeAsBytes.<anonymous closure> (dart:io/file_impl.dart:728:34)
+<asynchronous suspension>
+#5      ForwardingFile.writeAsString (package:file/src/forwarding/forwarding_file.dart:136:12)
+<asynchronous suspension>
+#6      ErrorHandlingFile.writeAsString.<anonymous closure> (package:flutter_tools/src/base/error_handling_io.dart:238:9)
+<asynchronous suspension>
+#7      _run (package:flutter_tools/src/base/error_handling_io.dart:514:12)
+<asynchronous suspension>
+#8      NativeAssetsBuildRunner._createFileStreamingLogger.<anonymous closure> (package:hooks_runner/src/build_runner/build_runner.dart:687:11)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[32m[✓][39m Flutter (Channel stable, 3.41.2, on Microsoft
+    Windows [version 10.0.26200.8039], locale fr-FR)
+    [2,2s]
+    [32m•[39m Flutter version 3.41.2 on channel stable at
+      E:\DevOps\fullstack\flutter
+    [32m•[39m Upstream repository
+      https://github.com/flutter/flutter.git
+    [32m•[39m Framework revision 90673a4eef (7 weeks ago),
+      2026-02-18 13:54:59 -0800
+    [32m•[39m Engine revision 6c0baaebf7
+    [32m•[39m Dart version 3.11.0
+    [32m•[39m DevTools version 2.54.1
+    [32m•[39m Feature flags: enable-web,
+      enable-linux-desktop, enable-macos-desktop,
+      enable-windows-desktop, enable-android,
+      enable-ios, cli-animations,
+      enable-native-assets,
+      omit-legacy-version-file,
+      enable-lldb-debugging,
+      enable-uiscene-migration
+
+[32m[✓][39m Windows Version (11 Professionnel 64-bit, 25H2,
+    2009) [21,4s]
+
+[32m[✓][39m Android toolchain - develop for Android devices
+    (Android SDK version 37.0.0-rc2) [17,4s]
+    [32m•[39m Android SDK at
+      C:\Users\fersd\AppData\Local\Android\sdk
+    [32m•[39m Emulator version 36.4.10.0 (build_id 15004761)
+      (CL:N/A)
+    [32m•[39m Platform android-36, build-tools 37.0.0-rc2
+    [32m•[39m Java binary at: E:\DevOps\fullstack\Nouveau
+      dossier\jbr\bin\java
+      This is the JDK bundled with the latest
+      Android Studio installation on this machine.
+      To manually set the JDK path, use: `flutter
+      config --jdk-dir="path/to/jdk"`.
+    [32m•[39m Java version OpenJDK Runtime Environment
+      (build 21.0.9+-14787801-b1163.94)
+    [32m•[39m All Android licenses accepted.
+
+[32m[✓][39m Chrome - develop for the web [782ms]
+    [32m•[39m Chrome at C:\Program
+      Files\Google\Chrome\Application\chrome.exe
+
+[32m[✓][39m Visual Studio - develop Windows apps (Visual
+    Studio Community 2026 18.4.0) [778ms]
+    [32m•[39m Visual Studio at C:\Program Files\Microsoft
+      Visual Studio\18\Community
+    [32m•[39m Visual Studio Community 2026 version
+      18.4.11605.240
+    [32m•[39m Windows 10 SDK version 10.0.26100.0
+
+[32m[✓][39m Connected device (3 available) [1 423ms]
+    [32m•[39m Windows (desktop) • windows • windows-x64    •
+      Microsoft Windows [version 10.0.26200.8039]
+    [32m•[39m Chrome (web)      • chrome  • web-javascript •
+      Google Chrome 145.0.7632.117
+    [32m•[39m Edge (web)        • edge    • web-javascript •
+      Microsoft Edge 146.0.3856.97
+
+[32m[✓][39m Network resources [2,7s]
+    [32m•[39m All expected network resources are available.
+
+[32m•[39m No issues found!
+```
