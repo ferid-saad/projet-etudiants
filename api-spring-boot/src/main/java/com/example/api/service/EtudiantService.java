@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import com.example.api.kafka.KafkaProducerService;
 import java.util.List;
 
 @Service
@@ -20,13 +21,16 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final DepartementRepository departementRepository;
     private final EtudiantMapper mapper;
+    private final KafkaProducerService kafkaProducerService;
 
     public EtudiantService(EtudiantRepository etudiantRepository,
                            DepartementRepository departementRepository,
-                           EtudiantMapper mapper) {
+                           EtudiantMapper mapper,
+                           KafkaProducerService kafkaProducerService) {
         this.etudiantRepository = etudiantRepository;
         this.departementRepository = departementRepository;
         this.mapper = mapper;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +61,12 @@ public class EtudiantService {
     public EtudiantDTO save(EtudiantDTO dto) {
         Departement dep = resolveDepartement(dto.getDepartementId());
         Etudiant e = mapper.toEntity(dto, dep);
-        return mapper.toDTO(etudiantRepository.save(e));
+        Etudiant saved = etudiantRepository.save(e);
+        EtudiantDTO savedDto = mapper.toDTO(saved);
+        
+        kafkaProducerService.publishEtudiantCreated(savedDto);
+        
+        return savedDto;
     }
 
     public EtudiantDTO update(Long id, EtudiantDTO dto) {
