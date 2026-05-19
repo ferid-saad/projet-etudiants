@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
 
@@ -9,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: etudiants_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: 071013
     ports:
       - "5432:5432"
     volumes:
@@ -22,24 +21,141 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── API Spring Boot 4 ──────────────────────────────────────────────────────
+  # ── API Spring Boot ────────────────────────────────────────────────────────
   api:
     build:
       context: ./api-spring-boot
       dockerfile: Dockerfile
     container_name: spring-etudiants-api
     ports:
-      - "8081:8081"
+      - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/etudiants_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_PASSWORD: 071013
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - etudiants-network
+    restart: on-failure
+
+  redis:
+    image: redis:7.2
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - etudiants-network
+
+  # ── Kafka & Zookeeper ──────────────────────────────────────────────────────
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - etudiants-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - etudiants-network
+
+  # ── Notification Service ───────────────────────────────────────────────────
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    depends_on:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8083:8083"
+    networks:
+      - etudiants-network
+
+  # ── Grading Service ────────────────────────────────────────────────────────
+  grading-service:
+    build: ./grading-service
+    container_name: grading-service
+    ports:
+      - "8082:8082"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - etudiants-network
-    restart: on-failure
+
+  # ── ELK Stack ──────────────────────────────────────────────────────────────
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - etudiants-network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    volumes:
+      - ./observability/logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+    networks:
+      - etudiants-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - etudiants-network
+
+  # ── Prometheus & Grafana ───────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - etudiants-network
+
+  grafana:
+    image: grafana/grafana:10.3.0
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    networks:
+      - etudiants-network
 
 # ── Réseau partagé ─────────────────────────────────────────────────────────
 networks:

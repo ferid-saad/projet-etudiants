@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestion des Étudiants</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #e7e9ed;
+      --surface:   #151821;
+      --border:    #252a38;
+      --accent:    #4f8ef7;
+      --accent2:   #a78bfa;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --success:   #34d399;
+      --danger:    #f87171;
+      --radius:    12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5;
+    }
+
+    .wrapper { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      animation: slideDown .5s ease both;
+    }
+
+    .logo { display: flex; flex-direction: column; gap: .25rem; }
+    .logo-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logo-sub { font-size: .8rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+
+    .badge {
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: .35rem .75rem;
+      border-radius: 999px;
+      color: var(--muted);
+    }
+    .badge span { color: var(--success); }
+
+    /* ── Controls bar ── */
+    .controls {
+      display: flex; gap: 1rem; align-items: center;
+      margin-bottom: 1.5rem;
+      animation: slideDown .5s .1s ease both;
+    }
+
+    .search-wrap {
+      flex: 1; position: relative;
+    }
+    .search-wrap svg {
+      position: absolute; left: .9rem; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    input[type="text"], input[type="number"] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .65rem .9rem .65rem 2.5rem;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      width: 100%;
+      transition: border-color .2s;
+      outline: none;
+    }
+    input:focus { border-color: var(--accent); }
+
+    .year-wrap { position: relative; }
+    .year-wrap input { padding-left: .9rem; width: 140px; }
+
+    button {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: .65rem 1.25rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: none;
+      transition: opacity .2s, transform .1s;
+    }
+    button:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    .btn-ghost {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-ghost:hover { border-color: var(--accent); }
+
+    /* ── Stats row ── */
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      margin-bottom: 1.5rem;
+      animation: slideDown .5s .2s ease both;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      display: flex; flex-direction: column; gap: .25rem;
+    }
+    .stat-label { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .stat-value { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--text); }
+    .stat-value.accent { color: var(--accent); }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: slideDown .5s .3s ease both;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead tr {
+      background: rgba(79,142,247,.07);
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      padding: .9rem 1.25rem;
+      text-align: left;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.02); }
+
+    td {
+      padding: .85rem 1.25rem;
+      font-size: .875rem;
+      vertical-align: middle;
+    }
+
+    .td-id {
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
+    }
+    .td-nom { font-weight: 500; }
+    .td-cin {
+      font-family: 'DM Mono', monospace;
+      font-size: .78rem;
+      color: var(--accent);
+    }
+    .age-pill {
+      display: inline-block;
+      background: rgba(167,139,250,.12);
+      color: var(--accent2);
+      border-radius: 999px;
+      padding: .2rem .7rem;
+      font-size: .78rem;
+      font-family: 'DM Mono', monospace;
+    }
+    .date-text { color: var(--muted); font-size: .8rem; }
+
+    /* ── States ── */
+    .state-row td {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: .5rem;
+    }
+    .error-msg { color: var(--danger); }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: .75rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      animation: slideDown .5s .4s ease both;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Animations ── */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      .controls { flex-wrap: wrap; }
+      .year-wrap input { width: 100%; }
+      th:nth-child(3), td:nth-child(3),
+      th:nth-child(5), td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      <div class="logo-title">Liste des Étudiants</div>
+      <div class="logo-sub">Tableau de bord — API REST</div>
+    </div>
+    <div class="badge">GET /api/etudiants &nbsp;·&nbsp; <span>●</span> live</div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total étudiants</div>
+      <div class="stat-value accent" id="stat-total">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Âge moyen</div>
+      <div class="stat-value" id="stat-age">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Dernière mise à jour</div>
+      <div class="stat-value" id="stat-time" style="font-size:1rem;padding-top:.4rem">—</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Rechercher par nom ou CIN…"/>
+    </div>
+    <div class="year-wrap">
+      <input type="number" id="year-filter" placeholder="Année (ex: 2022)" min="1900" max="2100"/>
+    </div>
+    <button class="btn-primary" onclick="loadEtudiants()">↻ Actualiser</button>
+    <button class="btn-ghost" onclick="clearFilters()">Réinitialiser</button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom</th>
+          <th>CIN</th>
+          <th>Date de naissance</th>
+          <th>Âge</th>
+          <th>Inscription</th>
+          <th>Département</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr class="state-row">
+          <td colspan="7"><span class="spinner"></span> Chargement…</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    Micro-service étudiants &nbsp;·&nbsp;
+    <a href="/swagger-ui.html" target="_blank">Swagger UI</a> &nbsp;·&nbsp;
+    Spring Boot 4 &nbsp;·&nbsp;
+    Ferid saad
+  </footer>
+  </footer>
+</div>
+
+<script>
+  let allData = [];
+
+  // ── Charge la liste depuis l'API ──────────────────────────────────────────
+  async function loadEtudiants() {
+    const year = document.getElementById('year-filter').value.trim();
+    const url  = year ? `/api/etudiants?annee=${year}` : '/api/etudiants';
+
+    setLoading(true);
+
+    try {
+      const res  = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      allData = await res.json();
+      renderTable(allData);
+      updateStats(allData);
+    } catch (err) {
+      showError(err.message);
+    }
+  }
+
+  // ── Rendu du tableau ──────────────────────────────────────────────────────
+  function renderTable(data) {
+    const tbody  = document.getElementById('tbody');
+    const search = document.getElementById('search').value.trim().toLowerCase();
+
+    const filtered = search
+      ? data.filter(e =>
+          (e.nom  || '').toLowerCase().includes(search) ||
+          (e.cin  || '').toLowerCase().includes(search))
+      : data;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr class="state-row"><td colspan="6">Aucun étudiant trouvé.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map((e, i) => `
+      <tr style="animation: slideDown .3s ${i * 0.04}s ease both; opacity:0">
+        <td class="td-id">${e.id ?? '—'}</td>
+        <td class="td-nom">${e.nom ?? '—'}</td>
+        <td class="td-cin">${e.cin ?? '—'}</td>
+        <td class="date-text">${formatDate(e.dateNaissance)}</td>
+        <td><span class="age-pill">${e.age ?? calcAge(e.dateNaissance)} ans</span></td>
+        <td class="date-text">${e.anneePremiereInscription ?? '—'}</td>
+        <td class="date-text">${e.departementNom ?? '—'}</td>
+      </tr>`).join('');
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  function updateStats(data) {
+    document.getElementById('stat-total').textContent = data.length;
+
+    const ages = data
+      .map(e => e.age ?? calcAge(e.dateNaissance))
+      .filter(a => a > 0);
+    const avg = ages.length
+      ? Math.round(ages.reduce((s, a) => s + a, 0) / ages.length)
+      : '—';
+    document.getElementById('stat-age').textContent = avg + (avg !== '—' ? ' ans' : '');
+
+    const now = new Date();
+    document.getElementById('stat-time').textContent =
+      now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function setLoading(on) {
+    if (on) {
+      document.getElementById('tbody').innerHTML =
+        `<tr class="state-row"><td colspan="7"><span class="spinner"></span> Chargement…</td></tr>`;
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('tbody').innerHTML =
+      `<tr class="state-row"><td colspan="7" class="error-msg">⚠ Erreur : ${msg}<br>
+       <small>Vérifiez que le serveur Spring Boot tourne sur le port 8080.</small></td></tr>`;
+  }
+
+  function formatDate(d) {
+    if (!d) return '—';
+    const parts = Array.isArray(d) ? d : d.split('-');
+    return new Date(parts[0], parts[1]-1, parts[2])
+      .toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function calcAge(d) {
+    if (!d) return '?';
+    const parts = Array.isArray(d) ? d : d.split('-');
+    const birth = new Date(parts[0], parts[1]-1, parts[2]);
+    const now   = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    if (now < new Date(now.getFullYear(), birth.getMonth(), birth.getDate())) age--;
+    return age;
+  }
+
+  function clearFilters() {
+    document.getElementById('search').value = '';
+    document.getElementById('year-filter').value = '';
+    renderTable(allData);
+  }
+
+  // Recherche en temps réel
+  document.getElementById('search').addEventListener('input', () => renderTable(allData));
+
+  // ── Lancement initial ─────────────────────────────────────────────────────
+  loadEtudiants();
+</script>
+</body>
+</html>

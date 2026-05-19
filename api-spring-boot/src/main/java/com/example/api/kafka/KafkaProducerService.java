@@ -1,0 +1,28 @@
+package com.example.api.kafka;
+
+import com.example.api.dto.EtudiantDTO;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+@Service
+public class KafkaProducerService {
+
+    private final KafkaTemplate<String, EtudiantEvent> kafkaTemplate;
+
+    public KafkaProducerService(KafkaTemplate<String, EtudiantEvent> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    public void publishEtudiantCreated(EtudiantDTO etudiant) {
+        EtudiantEvent event = EtudiantEvent.builder()
+                .etudiantId(etudiant.getId())
+                .nom(etudiant.getNom())
+                .email(etudiant.getEmail())
+                .timestamp(LocalDateTime.now())
+                .build();
+        
+        kafkaTemplate.send("etudiant-created", event);
+    }
+}

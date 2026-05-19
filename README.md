@@ -1,198 +1,1 @@
-# Projet Gestion des Étudiants
-
-> **Formateur :** Wahid Hamdi  
-> **Technologies :** Spring Boot 4 · PostgreSQL · Docker · Flutter
-
-Mini-projet complet composé d'une API REST, d'une base de données conteneurisée et d'une application mobile.
-
----
-# Lien GitHub
-https://hub.docker.com/r/feridsaad/projet-etudiants-api
----
-## Structure du projet
-
-```
-projet-etudiants/
-├── api-spring-boot/          ← API Spring Boot 4
-│   ├── src/
-│   │   ├── main/java/com/example/api/
-│   │   │   ├── EtudiantsApiApplication.java
-│   │   │   ├── DataInitializer.java
-│   │   │   ├── entity/Etudiant.java
-│   │   │   ├── repository/EtudiantRepository.java
-│   │   │   └── controller/EtudiantController.java
-│   │   └── main/resources/application.properties
-│   ├── Dockerfile
-│   └── pom.xml
-├── mobile-app/               ← Application Flutter
-│   ├── lib/
-│   │   ├── main.dart
-│   │   ├── models/etudiant.dart
-│   │   ├── services/api_service.dart
-│   │   └── screens/etudiant_list_screen.dart
-│   └── pubspec.yaml
-├── docker-compose.yml        ← Lance l'API + PostgreSQL
-└── README.md
-```
-
----
-
-## Partie 1 — API REST Spring Boot 4
-
-### Endpoint
-
-| Méthode | URL | Description |
-|---------|-----|-------------|
-| GET | `/api/etudiants` | Retourne la liste de tous les étudiants (JSON) |
-
-### Entité Etudiant
-
-| Champ | Type | Description |
-|-------|------|-------------|
-| `id` | Long | Identifiant auto-généré |
-| `cin` | String | Carte d'identité nationale |
-| `nom` | String | Nom complet |
-| `dateNaissance` | LocalDate | Date de naissance (ISO-8601) |
-
-### Lancer l'API localement (sans Docker)
-
-Prérequis : Java 21+, Maven 3.9+, PostgreSQL 16 en cours d'exécution sur le port 5432.
-
-1. Créer la base de données :
-   ```sql
-   CREATE DATABASE etudiants_db;
-   ```
-
-2. Démarrer l'application :
-   ```bash
-   cd api-spring-boot
-   mvn spring-boot:run
-   ```
-
-3. Tester dans le navigateur ou avec curl :
-   ```
-   http://localhost:8081/api/etudiants
-   ```
-
----
-
-## Partie 2 — Docker (API + Base de données)
-
-### Prérequis
-
-- Docker Desktop installé et démarré
-
-### Lancer le projet complet
-
-Depuis la **racine** du projet (`projet-etudiants/`) :
-
-```bash
-docker compose up --build
-```
-
-L'API est ensuite accessible à :
-
-```
-http://localhost:8080/api/etudiants
-```
-
-### Arrêter les conteneurs
-
-```bash
-docker compose down
-```
-
-Pour supprimer aussi le volume de données PostgreSQL :
-
-```bash
-docker compose down -v
-```
-
-### Architecture Docker
-
-```
-┌─────────────────────────────────┐  réseau etudiants-network
-│  spring-etudiants-api :8080     │◄──────────────────────────►  Votre machine
-│  (Spring Boot 4 / Java 21)      │
-└────────────────┬────────────────┘
-                 │ jdbc:postgresql://db:5432
-┌────────────────▼────────────────┐
-│  postgres-etudiants :5432       │
-│  (PostgreSQL 16)                │
-└─────────────────────────────────┘
-```
-
----
-
-## Partie 3 — Application mobile Flutter
-
-### Prérequis
-
-- Flutter SDK 3.x installé (`flutter --version`)
-- Un émulateur Android/iOS lancé **ou** un appareil physique connecté
-
-### Installation
-
-```bash
-cd mobile-app
-flutter pub get
-```
-
-### Configuration de l'URL de l'API
-
-Modifier la constante `_baseUrl` dans `lib/services/api_service.dart` :
-
-| Environnement | URL à utiliser |
-|---------------|---------------|
-| Émulateur Android | `http://10.0.2.2:8080` (valeur par défaut) |
-| Simulateur iOS | `http://localhost:8080` |
-| Appareil physique | `http://<IP-de-votre-machine>:8080` |
-
-Pour connaître votre IP locale sur Windows :
-```powershell
-ipconfig
-```
-
-### Lancer l'application
-
-```bash
-flutter run
-```
-
-### Note : créer le projet Flutter from scratch
-
-Si vous partez de zéro, exécutez d'abord :
-
-```bash
-flutter create mobile-app
-```
-
-Puis copiez/remplacez :
-- `mobile-app/pubspec.yaml`
-- `mobile-app/lib/` (tous les fichiers)
-
----
-
-## Données initiales
-
-5 étudiants sont insérés automatiquement au démarrage (via `DataInitializer`) si la table est vide :
-
-| CIN | Nom | Date de naissance |
-|-----|-----|-------------------|
-| AB123456 | Ahmed Benali | 2001-03-15 |
-| CD789012 | Fatima Zahra Alami | 2002-07-22 |
-| EF345678 | Mohamed Chakir | 2000-11-08 |
-| GH901234 | Sara Mansouri | 2003-01-30 |
-| IJ567890 | Youssef Kadiri | 2001-09-14 |
-
----
-
-## Stack technique
-
-| Composant | Technologie |
-|-----------|------------|
-| API REST | Spring Boot 4.0.4 · Java 21 |
-| Persistance | Spring Data JPA · Hibernate 6 |
-| Base de données | PostgreSQL 16 |
-| Conteneurs | Docker · Docker Compose |
-| Application mobile | Flutter 3.x · package `http` |
+  #   P r o j e t     t u d i a n t s      S p r i n t   4   # Projet Étudiants — Sprint 4## 🎯 Objectif généralAtteindre un niveau de qualité logicielle professionnel sur le microservice étudiant :- Mise en place d’une stratégie de test complète (unitaires, intégration, E2E, stress).- Traçabilité Jira via Xray et intégration GitHub ↔ Jira.- Ajout d’un microservice d’authentification basé sur Express, MongoDB et JWT.- Développement d’un frontend Next.js + Tailwind pour la gestion des étudiants et départements.---## 📂 Structure du dépôt````/projet-etudiants/├── api-spring-boot/        # Microservice étudiant (Spring Boot)│   ├── src/test/java/unit/         # Tests unitaires JUnit + Mockito│   ├── src/test/java/integration/  # Tests d’intégration Testcontainers│   └── pom.xml                     # Plugins JaCoCo + Gatling├── auth-service/          # Microservice Auth (Node.js / Express / MongoDB / JWT)│   ├── src/models/User.js│   ├── src/routes/auth.js│   └── app.js├── frontend/              # Frontend Next.js + Tailwind│   ├── app/etudiants/     # Liste + formulaire étudiants│   ├── app/departements/  # Liste + formulaire départements│   └── cypress/e2e/       # Tests E2E Cypress├── .github/workflows/     # CI/CD avec publication Xray└── docker-compose.yml     # Services API, DB, Auth, Frontend````---## ✅ Tâches réalisées### 1. Gestion de versions & Sprint- Création de la branche `version-4` à partir de `version-3`.- Création du **Sprint 4** dans Jira avec User Stories planifiées.### 2. Stratégie de tests- **Unitaires** : JUnit 5 + Mockito sur la logique métier (`EtudiantService`).- **Intégration** : Testcontainers avec PostgreSQL.- **E2E** : Cypress sur le frontend Next.js (`/etudiants`, `/departements`).- **Stress** : Gatling pour simuler charge concurrente sur l’API.### 3. Couverture de code- Plugin **JaCoCo** configuré avec seuil minimum de 80 %.- Build Maven échoue si couverture < 80 %.### 4. Intégration Jira- **GitHub ↔ Jira** : commits, branches et PRs liés aux tickets Jira.- **Xray** : gestion des cas de test, publication automatique des résultats CI.### 5. Microservice Authentification- Création du service `auth-service/` avec :  - Express pour l’API REST.  - MongoDB + Mongoose pour la persistance.  - bcrypt pour le hachage des mots de passe.  - JWT pour l’authentification.- Endpoints : `POST /auth/register`, `POST /auth/login`.- Ajout au `docker-compose.yml` avec conteneur MongoDB.### 6. Frontend Next.js + Tailwind- Création du projet `frontend/` avec App Router.- Pages distinctes :  - `/etudiants` : liste + formulaire CRUD étudiants.  - `/departements` : liste + formulaire CRUD départements.- Utilisation de **Server Components** pour la lecture (fetch/axios).- Utilisation de **Client Components** pour les formulaires interactifs.- Styling responsive avec Tailwind CSS.- Ajout d’une **Navbar** pour naviguer entre les pages.---## Test unitaire: JUnit 5 + Mockito sur la logique métier (`EtudiantService`).````J’ai implémenté la partie tests unitaires dans ton module backend api-spring-boot, en restant sur JUnit 5 + Mockito sans charger le contexte Spring pour les services.Ajouts réalisés•  projet-etudiants/api-spring-boot/src/test/java/com/example/api/service/EtudiantServiceTest.java◦  couverture des cas métier principaux :▪  findAll▪  findByAnnee▪  findById (succès + not found)▪  save (avec/sans département + département introuvable)▪  update (succès + étudiant introuvable)▪  delete (succès + étudiant introuvable)•  projet-etudiants/api-spring-boot/src/test/java/com/example/api/service/DepartementServiceTest.java◦  couverture CRUD complète :▪  findAll, findById (succès + not found), save, update (succès + not found), delete (succès + not found)•  projet-etudiants/api-spring-boot/src/test/java/com/example/api/entity/EtudiantTest.java◦  tests isolés du calcul d’âge (age()), avec cas anniversaire passé / pas encore passé.•  projet-etudiants/api-spring-boot/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker◦  ajouté mock-maker-subclass pour compatibilité Mockito sur ta JVM actuelle.````## Validation````J’ai exécuté les tests avec Maven et tout passe :•  Tests run: 22•  Failures: 0•  Errors: 0•  BUILD SUCCESS````## 🚀 Exécution du projet### Lancer le backend + frontend```bashdocker-compose up -dcd frontendnpm installnpm run dev````##Image Jira-sprint-4````![Board Jira](./docs/sprint4.png)````
