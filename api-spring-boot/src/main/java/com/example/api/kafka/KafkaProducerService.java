@@ -1,17 +1,19 @@
 package com.example.api.kafka;
 
 import com.example.api.dto.EtudiantDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
 public class KafkaProducerService {
 
     private final KafkaTemplate<String, EtudiantEvent> kafkaTemplate;
+
+    public KafkaProducerService(KafkaTemplate<String, EtudiantEvent> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void publishEtudiantCreated(EtudiantDTO etudiant) {
         EtudiantEvent event = EtudiantEvent.builder()

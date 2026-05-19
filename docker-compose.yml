@@ -21,38 +21,31 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── API Spring Boot 4 ──────────────────────────────────────────────────────
+  # ── API Spring Boot ────────────────────────────────────────────────────────
   api:
     build:
       context: ./api-spring-boot
       dockerfile: Dockerfile
     container_name: spring-etudiants-api
     ports:
-      - "8081:8081"
+      - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/etudiants_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 071013
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       db:
         condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
     networks:
       - etudiants-network
     restart: on-failure
-
-
-  etudiant-api:
-    build: ./api-spring-boot
-    container_name: etudiant-api
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-    environment:
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
-    networks:
-     - etudiants-network
 
   redis:
     image: redis:7.2
