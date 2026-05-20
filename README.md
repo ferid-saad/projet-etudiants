@@ -6,54 +6,87 @@
 Mini-projet complet composé d'une API REST, d'une base de données conteneurisée et d'une application mobile.
 
 ---
-# Lien GitHub
+
+# Lien dockerhub
+
 https://hub.docker.com/r/feridsaad/projet-etudiants-api
+
 ---
-## Structure du projet
+
+## 📂 Structure du projet
 
 ```
+
+
 projet-etudiants/
-├── api-spring-boot/          ← API Spring Boot 4
+├── .gitignore                <- Fichiers/dossiers ignorés par Git
+├── architecture.txt          <- Documentation sur l’architecture du projet
+├── docker-compose.yml        <- Orchestration des services (API, DB, etc.)
+├── README.md                 <- Documentation principale du projet
+│
+├── .github/                  <- Configurations GitHub (issues, hooks)
+│   ├── ISSUE_TEMPLATE/        <- Modèles pour bug reports et feature requests
+│   └── java-upgrade/hooks/    <- Scripts PowerShell/Bash pour automatisation
+│
+├── .idea/                    <- Configurations IntelliJ IDEA
+├── .vscode/                  <- Configurations VS Code
+│
+├── api-spring-boot/          <- API backend Spring Boot
+│   ├── Dockerfile             <- Image Docker pour l’API
+│   ├── pom.xml                <- Dépendances Maven
 │   ├── src/
 │   │   ├── main/java/com/example/api/
-│   │   │   ├── EtudiantsApiApplication.java
-│   │   │   ├── DataInitializer.java
-│   │   │   ├── entity/Etudiant.java
-│   │   │   ├── repository/EtudiantRepository.java
-│   │   │   └── controller/EtudiantController.java
-│   │   └── main/resources/application.properties
-│   ├── Dockerfile
-│   └── pom.xml
-├── mobile-app/               ← Application Flutter
-│   ├── lib/
-│   │   ├── main.dart
-│   │   ├── models/etudiant.dart
-│   │   ├── services/api_service.dart
-│   │   └── screens/etudiant_list_screen.dart
-│   └── pubspec.yaml
-├── docker-compose.yml        ← Lance l'API + PostgreSQL
-└── README.md
-```
+│   │   │   ├── EtudiantsApiApplication.java   <- Classe principale Spring Boot
+│   │   │   ├── config/                        <- Configurations (Jackson, Redis, OpenAPI)
+│   │   │   ├── controller/                    <- Contrôleurs REST (Etudiant, Département)
+│   │   │   ├── dto/                           <- Objets de transfert (DTO)
+│   │   │   ├── entity/                        <- Entités JPA (Etudiant, Département)
+│   │   │   ├── exception/                     <- Gestion des exceptions
+│   │   │   ├── mapper/                        <- MapStruct (conversion Entity <-> DTO)
+│   │   │   ├── repository/                    <- Interfaces JPA Repository
+│   │   │   └── service/                       <- Services métier
+│   │   ├── main/resources/                    <- Configurations (application.properties)
+│   │   ├── test/java/com/example/api/         <- Tests unitaires et BDD (Cucumber)
+│   │   └── test/resources/features/           <- Scénarios Gherkin (.feature)
+│   └── target/                                <- Fichiers compilés par Maven
+│
+├── docs/                     <- Documentation visuelle (schémas, Jira board)
+│   ├── grading_db.png
+│   ├── jira-board.png
+│   └── jira-board-backlog.png
+│
+├── grading-service/          <- Service de gestion des notes
+│   ├── pom.xml                <- Dépendances Maven
+│   ├── src/main/java/com/example/grading/
+│   │   ├── GradingServiceApplication.java     <- Classe principale
+│   │   ├── controller/                        <- Contrôleur REST (NoteController)
+│   │   ├── dto/                               <- DTO pour les notes
+│   │   ├── entity/                            <- Entité Note
+│   │   ├── exception/                         <- Exceptions personnalisées
+│   │   ├── mapper/                            <- MapStruct (NoteMapper)
+│   │   ├── repository/                        <- JPA Repository
+│   │   └── service/                           <- Service métier
+│   └── test/java/com/example/grading/         <- Tests unitaires
+│
+├── K8s/                      <- Manifests Kubernetes
+│   ├── etudiant-deployment.yaml <- Déploiement API étudiants
+│   └── postgres-deployment.yaml <- Déploiement base PostgreSQL
+│
+├── mobile-app/               <- Application Flutter (front-end mobile)
+│   ├── pubspec.yaml           <- Dépendances Flutter
+│   ├── lib/                   <- Code source Dart
+│   │   ├── main.dart          <- Point d’entrée Flutter
+│   │   ├── models/            <- Modèles (Etudiant)
+│   │   ├── services/          <- Services API (api_service.dart)
+│   │   └── screens/           <- Interfaces (liste des étudiants)
+│   ├── android/               <- Projet Android natif
+│   ├── ios/                   <- Projet iOS natif
+│   ├── web/                   <- Version web (index.html, manifest.json)
+│   ├── linux/                 <- Version Linux
+│   ├── macos/                 <- Version macOS
+│   └── windows/               <- Version Windows
 
----
-
-## Partie 1 — API REST Spring Boot 4
-
-### Endpoint
-
-| Méthode | URL | Description |
-|---------|-----|-------------|
-| GET | `/api/etudiants` | Retourne la liste de tous les étudiants (JSON) |
-
-### Entité Etudiant
-
-| Champ | Type | Description |
-|-------|------|-------------|
-| `id` | Long | Identifiant auto-généré |
-| `cin` | String | Carte d'identité nationale |
-| `nom` | String | Nom complet |
-| `dateNaissance` | LocalDate | Date de naissance (ISO-8601) |
-
+````
 ### Lancer l'API localement (sans Docker)
 
 Prérequis : Java 21+, Maven 3.9+, PostgreSQL 16 en cours d'exécution sur le port 5432.
@@ -119,6 +152,54 @@ docker compose down -v
 ┌────────────────▼────────────────┐
 │  postgres-etudiants :5432       │
 │  (PostgreSQL 16)                │
+└─────────────────────────────────┘
+```
+
+---
+
+## Partie 4 — Déploiement Kubernetes
+
+### Prérequis
+
+- Kubernetes cluster (Minikube, Kind, ou cluster cloud)
+- kubectl installé et configuré
+
+### Déployer sur Kubernetes
+
+Depuis le dossier `K8s/` :
+
+1. Appliquer les déploiements :
+   ```bash
+   kubectl apply -f postgres-deployment.yaml
+   kubectl apply -f etudiant-deployment.yaml
+   ```
+
+2. Vérifier les pods :
+   ```bash
+   kubectl get pods
+   ```
+
+3. Vérifier les services :
+   ```bash
+   kubectl get services
+   ```
+
+L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
+
+### Architecture Kubernetes
+
+```
+┌─────────────────────────────────┐
+│  etudiant-deployment            │
+│  (Spring Boot API)              │
+│  Service: etudiant-service      │
+│  NodePort: 30080                │
+└────────────────┬────────────────┘
+                 │ jdbc:postgresql://postgres-service:5432
+┌────────────────▼────────────────┐
+│  postgres-deployment            │
+│  (PostgreSQL 16)                │
+│  Service: postgres-service      │
 └─────────────────────────────────┘
 ```
 
@@ -196,3 +277,66 @@ Puis copiez/remplacez :
 | Base de données | PostgreSQL 16 |
 | Conteneurs | Docker · Docker Compose |
 | Application mobile | Flutter 3.x · package `http` |
+
+---
+
+## Partie 4 — Déploiement Kubernetes
+
+### Prérequis
+
+- Kubernetes cluster (Minikube, Kind, ou cluster cloud)
+- kubectl installé et configuré
+
+### Déployer sur Kubernetes
+
+Depuis le dossier `K8s/` :
+
+1. Appliquer les déploiements :
+   ```bash
+   kubectl apply -f postgres-deployment.yaml
+   kubectl apply -f etudiant-deployment.yaml
+   ```
+
+2. Vérifier les pods :
+   ```bash
+   kubectl get pods
+   ```
+
+3. Vérifier les services :
+   ```bash
+   kubectl get services
+   ```
+
+L'API sera accessible via NodePort sur le port 30080 de vos nœuds Kubernetes.
+
+### Architecture Kubernetes
+
+```
+┌─────────────────────────────────┐
+│  etudiant-deployment            │
+│  (Spring Boot API)              │
+│  Service: etudiant-service      │
+│  NodePort: 30080                │
+└────────────────┬────────────────┘
+                 │ jdbc:postgresql://postgres-service:5432
+┌────────────────▼────────────────┐
+│  postgres-deployment            │
+│  (PostgreSQL 16)                │
+│  Service: postgres-service      │
+└─────────────────────────────────┘
+```
+
+## Board Jira
+
+![Board Jira](./docs/jira-board.png)
+
+## Board Jira-backlog
+
+![Board Jira](./docs/jira-board-backlog.png)
+
+## grading_db
+
+![Board Jira](./docs/grading_db.png)
+
+
+
